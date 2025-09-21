@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-warning">
+    <nav class="navbar navbar-expand-lg bg-warning">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Spice Hut</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#ourSpl">Our Specials</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Menu
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#nonveg">Non-veg</a></li>
+                  <li><a class="dropdown-item" href="#veg">Veg</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Chineese</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link ">Contact US</a>
+              </li>
+            </ul>
+
+            <i class="bi bi-person-circle"></i>
+            <form action="/logout" method="post">
+              <button class="btn btn-primary ms-5" name="signout" type="submit" >SignOut</button> 
+            </form>
+            <!-- {{if .}}
+            <p class="ms-3 mt-1 login-icon">Welcome {{.}}</p>
+            <form action="/logout" method="post">
+              <button class="btn btn-primary ms-5" name="signout" type="submit" >SignOut</button> 
+            </form>
+            {{else}}
+
+            <a href="/login" class="ms-3 mt-1 login-icon">Login</a>
+            {{end}} -->
+            
+          </div>
+        </div>
+      </nav>
+
+      <div id="carouselExampleCaptions" class="carousel slide ">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="../static/images/wallpaperflare.com_wallpaper.jpg" class="d-block w-100 img1" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>BURGERS </h5>
+              <p>500ml Pepsi & French Fires Combo</p>
+            </div>
+          </div>
+          <div class="carousel-item ">
+            <img src="../static/images/wallpaperflare.com_wallpaper (1).jpg" class="d-block w-100 img1" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Chiken Biriyani</h5>
+              <p>Alfaham Chicken Or Normal Chicken</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="../static/images/wallpaperflare.com_wallpaper (2).jpg" class="d-block w-100 img1" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Pizza</h5>
+              <p>Barbeque Pizza or Veg Pizza</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      <!-- cards-->
+      <div class="container-fluid bg-warning text-center" id="ourSpl">
+        <h1>Our Specials</h1>
+        <br>
+        <br>
+        <h3 id="nonveg">Non Veg Items</h3>
+        <div class="row my-5 mx-5">
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/alfaham.jpg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Alfaham</h5>
+                      <p class="card-text">
+                        Al Faham Chicken - SideChef
+                        Alfahm is an Arabic grilled chicken. This chicken recipe is very popular in the middle east.</p>
+                      <a href="#" class="btn btn-primary">Rs : 490/-</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/beef fry.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Beef fry</h5>
+                      <p class="card-text">
+                
+                        Kerala beef fry is a dish made of beef, slow-roasted in a mixture of spices, onions and coconut slivers, fried in coconut oil.</p>
+                      <a href="#" class="btn btn-primary">Rs : 200/-</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/tandoori.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Tandoori</h5>
+                      <p class="card-text">
+                        Tandoori chicken is a popular Indian dish where marinated chicken is grilled to perfection in a Tandoor, a cylindrical clay oven. </p>
+                      <a href="#" class="btn btn-primary">Rs : 450/-</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/grilled.webp" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Grilled Chicken</h5>
+                      <p class="card-text">
+                        When creating a healthy diet plan, grilled chicken is almost always a staple. Meat is very well cooked & healthy</p>
+                      <a href="#" class="btn btn-primary">Rs : 499/-</a>
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h3 id="veg"> Veg items</h3>
+            <br>
+            <br>
+            <br>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/egg dosa.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Egg Dosa</h5>
+                      <p class="card-text"> The Egg Dosa is not only healthy but extremely tasty, with the creaminess of egg and the crunch of grated coconut. </p>
+                      <a href="#" class="btn btn-primary">Rs : 150/-</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/dosa ghee.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Ghee Dosa</h5>
+                      <p class="card-text">
+                        Ghee and butter in moderate quantities is healthier option to make dosa. Come and have  a homely dosa</p>
+                      <a href="#" class="btn btn-primary">Rs : 50/-</a>
+                    </div>
+                  </div>
+
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/egg curry.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Egg Roast</h5>
+                      <p class="card-text">Egg Roast is a zesty fare in which eggs are cooked and coated in a spicy and caramelized onion-tomato gravy.</p>
+                      <a href="#" class="btn btn-primary">Rs : 90/-</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="../static/images/kappa biriyani.jpeg" class="card-img-top img2" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Kappa Biriyani</h5>
+                      <p class="card-text">
+                        It is a delicacy among Christian families in southern Kerala and is mostly known as Beef and tapioca (kappa).</p>
+                      <a href="#" class="btn btn-primary">Rs : 199/-</a>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <div class="row my-5">
+            <h3>Snacks & Drinks</h3>
+            <br>
+            <br>
+            <br>
+
+            <div class="col">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="../static/images/sand wich.jpeg" class="card-img-top img2" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">Sandwich</h5>
+                          <p class="card-text">Sandwich is one of the favourite snacks in the day to day life of us.We cannot imagine a life w/o that</p>
+                          <a href="#" class="btn btn-primary">Rs : 150/-</a>
+                        </div>
+                      </div>
+                </div>
+
+            </div>
+            <div class="col">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="../static/images/shakes.jpeg" class="card-img-top img2" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">Milk Shakes</h5>
+                          <p class="card-text">A wide variety of all flavours of milk shakes are available here, with combo offers like buy one get one</p>
+                          <a href="#" class="btn btn-primary">Rs :100/-</a>
+                        </div>
+                      </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="../static/images/burger.jpeg" class="card-img-top img2" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">Burgers</h5>
+                          <p class="card-text">How about having a burger , if you are that much hungry. Dont let your stomach empty.</p>
+                          <a href="#" class="btn btn-primary">Rs : 100/-</a>
+                        </div>
+                      </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="../static/images/cocktails.jpeg" class="card-img-top img2" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">Cocktails</h5>
+                          <p class="card-text">We provide a lot variety of cocktails wich is availble in all over the world.</p>
+                          <a href="#" class="btn btn-primary">Rs : 100/-</a>
+                        </div>
+                      </div>
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+
+      <footer>
+        <div class="container-fluid bg-primary  text-center " style="--bs-bg-opacity: .3;">
+            <h1>Contact Us</h1>
+            <p>Phone: +9876545674</p>
+            <p>Email: spicehut@gmail.com</p>
+            
+            <i class="bi bi-instagram bi-2x mx-2"></i>
+            <i class="bi bi-twitter mx-2"></i>
+            <i class="bi bi-facebook mx-2"></i>
+        
+
+
+
+        </div>
+      </footer>
+
+
+
+
+    
+
+
+
+
+        
+      
+    <!---bootstrap script-->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+</body>
+</html>

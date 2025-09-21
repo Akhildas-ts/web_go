@@ -1,0 +1,28 @@
+
+.img2{
+    height: 200px;
+}
+.bi{
+    font-size: 30px;
+}
+.heading1{
+    display: flex;
+    justify-content: center;
+    
+}
+.login-icon:hover{
+    cursor: pointer;
+
+}
+.login-icon{
+    font-size: 25px;
+    text-decoration: none;
+    color: black;
+}
+.heading1{
+    margin: auto;
+    color: aqua;
+    
+}
+
+
