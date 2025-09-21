@@ -1,12 +1,11 @@
+// handler/adminHandler.go
 package handler
 
 import (
-	"fmt"
 	"ginpackage/database"
 	"ginpackage/models"
-	"time"
-
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -25,90 +24,85 @@ func AdminLoginPost(c *gin.Context) {
 	email := strings.TrimSpace(c.Request.FormValue("adminEmail"))
 	password := strings.TrimSpace(c.Request.FormValue("adminPassword"))
 
-	var admin = models.Admin{}
-	fmt.Println(admin)
-	cookie, err := c.Cookie("adumin")
-	if err != nil {
-		fmt.Println(err, "erorr1")
-	} else if cookie != "" {
-
-		c.Redirect(303, "/adminloginpost")
-		return
-	}
-
+	// Validation
 	if email == "" {
-		var n = PageData{EmailInvalid: "Email is Invalid"}
-		c.HTML(200, "adminLogin.html", n)
-
-		fmt.Println("EmailEmpty")
-		return
-	} else if password == "" {
-		var n = PageData{PassInvalid: "Password is Invalid"}
-		c.HTML(200, "adminLogin.html", n)
-		fmt.Println("PasswordEmpty")
+		c.HTML(200, "adminLogin.html", PageData{EmailInvalid: "Email is required"})
 		return
 	}
-	result := database.Db.Where("email = ?", email).Where("password = ?", password).First(&admin)
+	if password == "" {
+		c.HTML(200, "adminLogin.html", PageData{PassInvalid: "Password is required"})
+		return
+	}
 
+	// Find admin
+	var admin models.Admin
+	result := database.Db.Where("email = ?", email).First(&admin)
 	if result.Error != nil || result.RowsAffected == 0 {
-		c.HTML(303, "adminLogin.html", PageData{EmailInvalid: "Email Not Found"})
-	}
-	if password != admin.Password {
-		c.HTML(303, "adminLogin.html", PageData{PassInvalid: "Password not matches"})
-	}
-	if password == admin.Password {
-
-		c.SetSameSite(http.SameSiteLaxMode)
-		c.SetCookie("adumin", "124", 300, "/", "", false, true)
-		cookie, _ := c.Cookie("adumin")
-		fmt.Println(cookie, "adumin-cookie here")
-		var users []models.User
-
-		database.Db.Find(&users)
-
-		// c.HTML(200, "admin.html", gin.H{
-		// 	"users": users,
-		// })
-		c.Redirect(303, "/admin")
-
-	} else {
-		c.Redirect(303, "/adminlogin")
+		c.HTML(200, "adminLogin.html", PageData{EmailInvalid: "Admin not found"})
 		return
 	}
+
+	// Check password (Note: In production, admin passwords should also be hashed)
+	if password != admin.Password {
+		c.HTML(200, "adminLogin.html", PageData{PassInvalid: "Invalid password"})
+		return
+	}
+
+	// Generate JWT token for admin
+	token, err := GenerateJWT(admin.ID, admin.Email, "admin")
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "adminLogin.html", PageData{PassInvalid: "Error generating token"})
+		return
+	}
+
+	// Set JWT in cookie
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("jwt_token", token, 24*60*60, "/", "", false, true) // 24 hours
+
+	c.Redirect(303, "/admin")
 }
+
 func Adminlogin(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache,no-store,must-revalidate")
 	c.Header("Expires", "0")
-	cookie, err := c.Cookie("adumin")
-	fmt.Println(cookie, "HEy cooke")
-	if err != nil {
-		fmt.Println(err, "error2")
-	}
-	if err == nil && cookie != "" {
-		fmt.Print("ethii")
-		c.Redirect(http.StatusSeeOther, "/admin")
-		// c.HTML(200, "admin.html", nil)
 
-		return
+	// Check if admin already has valid JWT
+	tokenString, err := c.Cookie("jwt_token")
+	if err == nil && tokenString != "" {
+		// Validate token
+		claims := &Claims{}
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err == nil && token.Valid && claims.UserType == "admin" {
+			c.Redirect(http.StatusSeeOther, "/admin")
+			return
+		}
 	}
+
 	c.HTML(200, "adminLogin.html", nil)
 }
+
 func AdminPage(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache,no-store,must-revalidate")
 	c.Header("Expires", "0")
-	cookie, err := c.Cookie("adumin")
-	if err != nil || cookie == "" {
-		c.Redirect(303, "/adminlogin")
-		return
-	}
+
+	// Get admin info from JWT claims (set by middleware)
+	adminEmail, _ := c.Get("email")
+
 	var users []models.User
 	database.Db.Find(&users)
+
 	c.HTML(200, "admin.html", gin.H{
-		"users": users,
+		"users":       users,
+		"admin_email": adminEmail,
 	})
 }
+
 func AdminLogout(c *gin.Context) {
-	c.SetCookie("adumin", "", -1, "", "", true, true)
+	// Clear JWT cookie
+	c.SetCookie("jwt_token", "", -1, "/", "", false, true)
 	c.Header("Cache-Control", "no-cache,no-store,must-revalidate")
 	c.Header("Expires", "0")
 	c.Redirect(303, "/adminlogin")
@@ -116,75 +110,137 @@ func AdminLogout(c *gin.Context) {
 
 func Search(c *gin.Context) {
 	var users []models.User
-	database.Db.Find(&users)
 	searchQuery := c.DefaultQuery("query", "")
+
 	if searchQuery != "" {
-		database.Db.Where("name ILIKE ?", "%"+searchQuery+"%").Find(&users)
+		database.Db.Where("name ILIKE ? OR email ILIKE ?", "%"+searchQuery+"%", "%"+searchQuery+"%").Find(&users)
 	} else {
 		database.Db.Find(&users)
 	}
+
 	c.HTML(200, "admin.html", gin.H{
 		"users": users,
 	})
 }
+
 func DeleteUser(c *gin.Context) {
-	var users models.User
 	userID := c.Param("id")
-	if err := database.Db.Where("id =?", userID).Delete(&users).Error; err != nil {
-		c.JSON(404, gin.H{
-			"error": "user not found",
-		})
+
+	// Convert string ID to uint
+	id, err := strconv.ParseUint(userID, 10, 32)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid user ID"})
 		return
 	}
-	c.Redirect(303, "/admin")
 
+	// Delete user
+	result := database.Db.Delete(&models.User{}, uint(id))
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete user"})
+		return
+	}
+
+	if result.RowsAffected == 0 {
+		c.JSON(404, gin.H{"error": "User not found"})
+		return
+	}
+
+	c.Redirect(303, "/admin")
 }
+
 func EditUser(c *gin.Context) {
-	var users models.User
+	var user models.User
 	userID := c.Param("id")
-	if err := database.Db.Where("id=?", userID).First(&users).Error; err != nil {
-		c.JSON(404, gin.H{"error": "user not found"})
+
+	if err := database.Db.Where("id = ?", userID).First(&user).Error; err != nil {
+		c.JSON(404, gin.H{"error": "User not found"})
 		return
 	}
+
 	c.HTML(200, "edituser.html", gin.H{
-		"users": users,
+		"users": user,
 	})
-
 }
+
 func UpdateUser(c *gin.Context) {
-	var users models.User
+	var user models.User
 	userID := c.Param("id")
-	if err := database.Db.Where("id=?", userID).First(&users).Error; err != nil {
-		c.JSON(404, gin.H{"error": "user not found"})
+
+	if err := database.Db.Where("id = ?", userID).First(&user).Error; err != nil {
+		c.JSON(404, gin.H{"error": "User not found"})
 		return
 	}
 
-	users.Name = c.PostForm("name")
-	users.Email = c.PostForm("email")
-	users.Password = c.PostForm("password")
-	database.Db.Save(&users)
-	c.Redirect(303, "/admin")
+	name := strings.TrimSpace(c.PostForm("name"))
+	email := strings.TrimSpace(c.PostForm("email"))
+	password := strings.TrimSpace(c.PostForm("password"))
 
+	// Validate input
+	if name == "" || email == "" {
+		c.JSON(400, gin.H{"error": "Name and email are required"})
+		return
+	}
+
+	user.Name = name
+	user.Email = email
+
+	// Only update password if provided
+	if password != "" {
+		hashedPassword, err := HashPassword(password)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Error processing password"})
+			return
+		}
+		user.Password = hashedPassword
+	}
+
+	if err := database.Db.Save(&user).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to update user"})
+		return
+	}
+
+	c.Redirect(303, "/admin")
 }
+
 func CreateUserPage(c *gin.Context) {
 	c.HTML(200, "createuser.html", nil)
 }
-func AddNewUser(c *gin.Context) {
-	var users models.User
-	users.Name = c.PostForm("name")
-	users.Email = c.PostForm("email")
-	users.Password = c.PostForm("password")
-	database.Db.Save(&users)
-	c.Redirect(303, "/admin")
-}
-func GenerateJWT(cookievalue string) (string, error) {
-	mySigningKey := []byte("SecretKey")
-	claims := &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
-		Subject:   cookievalue,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, err := token.SignedString(mySigningKey)
-	return ss, err
 
+func AddNewUser(c *gin.Context) {
+	name := strings.TrimSpace(c.PostForm("name"))
+	email := strings.TrimSpace(c.PostForm("email"))
+	password := strings.TrimSpace(c.PostForm("password"))
+
+	// Validate input
+	if name == "" || email == "" || password == "" {
+		c.JSON(400, gin.H{"error": "All fields are required"})
+		return
+	}
+
+	// Check if user already exists
+	var existingUser models.User
+	if err := database.Db.Where("email = ?", email).First(&existingUser).Error; err == nil {
+		c.JSON(400, gin.H{"error": "User already exists"})
+		return
+	}
+
+	// Hash password
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Error processing password"})
+		return
+	}
+
+	user := models.User{
+		Name:     name,
+		Email:    email,
+		Password: hashedPassword,
+	}
+
+	if err := database.Db.Create(&user).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.Redirect(303, "/admin")
 }
